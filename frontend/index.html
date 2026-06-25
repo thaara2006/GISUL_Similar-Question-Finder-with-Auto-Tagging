@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Similar Question Finder | Auto-Tagging & Semantic Search</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Decor -->
+    <div class="bg-gradient-orb orb-1"></div>
+    <div class="bg-gradient-orb orb-2"></div>
+    <div class="bg-gradient-orb orb-3"></div>
+
+    <div id="app" class="app-container">
+        <!-- Auth Section -->
+        <section id="auth-section" class="auth-section">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="logo">
+                        <i class="fa-solid fa-brain-circuit"></i>
+                        <span>StudyMatch</span>
+                    </div>
+                    <h1>Welcome to StudyMatch</h1>
+                    <p id="auth-subtext">Find similar past questions and automatically tag subjects using advanced AI.</p>
+                </div>
+
+                <!-- Tabs to switch between Login and Signup -->
+                <div class="auth-tabs">
+                    <button id="tab-login-btn" class="auth-tab active" onclick="switchAuthTab('login')">Log In</button>
+                    <button id="tab-signup-btn" class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+                </div>
+
+                <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+                    <div class="form-group">
+                        <label for="auth-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                            <input type="email" id="auth-email" placeholder="student@example.edu" required autocomplete="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="auth-password">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="auth-password" placeholder="••••••••" required minlength="6" autocomplete="current-password">
+                        </div>
+                    </div>
+                    
+                    <div id="auth-error" class="auth-error-msg hidden">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span id="auth-error-text">Incorrect email or password.</span>
+                    </div>
+
+                    <button type="submit" id="auth-submit-btn" class="btn btn-primary btn-full">
+                        <span>Log In</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Section (Authenticated) -->
+        <section id="dashboard-section" class="dashboard-section hidden">
+            <!-- Header Nav -->
+            <header class="dashboard-header">
+                <div class="logo">
+                    <i class="fa-solid fa-brain-circuit"></i>
+                    <span>StudyMatch</span>
+                </div>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <i class="fa-solid fa-user-graduate"></i>
+                        <span id="user-email-display">student@example.edu</span>
+                    </div>
+                    <button id="logout-btn" class="btn btn-outline btn-sm" onclick="handleLogout()">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Log Out</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="dashboard-layout">
+                <!-- Navigation Sidebar -->
+                <aside class="dashboard-sidebar">
+                    <nav class="sidebar-nav">
+                        <button id="nav-ask-btn" class="nav-item active" onclick="switchView('ask')">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <span>Ask a Question</span>
+                        </button>
+                        <button id="nav-history-btn" class="nav-item" onclick="switchView('history')">
+                            <i class="fa-solid fa-history"></i>
+                            <span>Search History</span>
+                        </button>
+                    </nav>
+                </aside>
+
+                <!-- Main Content Pane -->
+                <main class="dashboard-content">
+                    <!-- Ask Question View -->
+                    <div id="view-ask" class="view-pane active">
+                        <div class="view-header">
+                            <h2>Ask a Question</h2>
+                            <p>Type your homework or study question. We will auto-detect the subject and find semantically matching past questions.</p>
+                        </div>
+
+                        <div class="ask-container">
+                            <form id="ask-form" onsubmit="handleAskSubmit(event)">
+                                <div class="textarea-wrapper">
+                                    <textarea id="question-input" placeholder="e.g., Why do plant leaves change color in the autumn?" required maxlength="1000" oninput="updateCharCount(this)"></textarea>
+                                    <div class="textarea-footer">
+                                        <span id="char-count">0 / 1000</span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" id="ask-submit-btn" class="btn btn-primary">
+                                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                                    <span>Analyze Question</span>
+                                </button>
+                            </form>
+
+                            <!-- Results Section -->
+                            <div id="results-panel" class="results-panel hidden">
+                                <div class="divider"></div>
+                                <h3 class="results-title">Analysis Results</h3>
+
+                                <!-- Tag Auto Classifier Display -->
+                                <div class="results-card tag-card">
+                                    <div class="tag-card-content">
+                                        <span class="card-label">Auto-Assigned Tag</span>
+                                        <div class="tag-badge-container">
+                                            <span id="result-tag" class="tag-badge biology">Biology</span>
+                                        </div>
+                                    </div>
+                                    <div class="tag-card-explanation">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                        <span>Categorized using zero-shot semantic matching.</span>
+                                    </div>
+                                </div>
+
+                                <!-- Similar Matches Section -->
+                                <div class="similar-questions-section">
+                                    <h4>Semantically Similar Questions</h4>
+                                    <div id="similar-questions-list" class="similar-list">
+                                        <!-- Similar cards will be injected dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search History View -->
+                    <div id="view-history" class="view-pane">
+                        <div class="view-header">
+                            <h2>Your Past Questions</h2>
+                            <p>Browse through your asked questions and filter them by subject tag.</p>
+                        </div>
+
+                        <div class="history-controls">
+                            <div class="filter-group">
+                                <label for="history-tag-filter">Filter by Topic</label>
+                                <div class="select-wrapper">
+                                    <select id="history-tag-filter" onchange="loadHistory()">
+                                        <option value="All">All Subjects</option>
+                                        <!-- Dynamic tags will be loaded here -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="refresh-container">
+                                <button class="btn btn-icon" onclick="loadHistory()" title="Refresh History">
+                                    <i class="fa-solid fa-arrows-rotate"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- History List -->
+                        <div id="history-list-container" class="history-list-container">
+                            <!-- History items injected here -->
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </section>
+    </div>
+
+    <!-- App Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>

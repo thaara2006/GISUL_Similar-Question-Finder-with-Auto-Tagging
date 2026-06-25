@@ -1,0 +1,11 @@
+# Secrets
+.env
+*.pem
+*.key
+*.crt
+*.p12
+# Python
+__pycache__/
+*.pyc
+# GitHub PAT (avoid accidental commit)
+ghp_*
