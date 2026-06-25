@@ -1,0 +1,19 @@
+{
+  "name": "similar-question-finder",
+  "version": "1.0.0",
+  "description": "Semantic similar study question finder with zero-shot subject tagging",
+  "main": "backend/app.py",
+  "scripts": {
+    "dev": "python -m backend.app",
+    "start": "python -m backend.app"
+  },
+  "keywords": [
+    "nlp",
+    "fastapi",
+    "sentence-transformers",
+    "semantic-search",
+    "zero-shot-classification"
+  ],
+  "author": "Student Match Team",
+  "license": "MIT"
+}
